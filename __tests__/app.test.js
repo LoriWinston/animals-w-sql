@@ -31,35 +31,70 @@ describe('app routes', () => {
       return client.end(done);
     });
 
-    test('returns animals', async() => {
+    test('returns all animals', async() => {
 
       const expectation = [
         {
-          'id': 1,
-          'name': 'bessie',
-          'coolfactor': 3,
-          'owner_id': 1
+          id: 1,
+          species: 'bear',
+          temperament: 'judgemental',
+          owner_id: 1
         },
         {
-          'id': 2,
-          'name': 'jumpy',
-          'coolfactor': 4,
-          'owner_id': 1
+          id: 2,
+          species: 'fox',
+          temperament: 'playful',
+          owner_id: 1
         },
         {
-          'id': 3,
-          'name': 'spot',
-          'coolfactor': 10,
-          'owner_id': 1
+          id: 3,
+          species: 'rodent',
+          temperament: 'chill af',
+          owner_id: 1
+        },
+        {
+          id: 4,
+          species: 'wildcat',
+          temperament: 'badass',
+          owner_id: 1
+        },
+        {
+          id: 5,
+          species: 'wildcat',
+          temperament: 'wise',
+          owner_id: 1
+        },
+        {
+          id: 6,
+          species: 'mythical',
+          temperament: 'aloof whimsy',
+          owner_id: 1
         }
       ];
 
       const data = await fakeRequest(app)
         .get('/animals')
-        .expect('Content-Type', /json/)
+        // .expect('Content-Type', /json/)
         .expect(200);
 
       expect(data.body).toEqual(expectation);
     });
+    test('returns a single animal with the matching id', async() => {
+
+      const expectation = {
+        id: 1,
+        species: 'bear',
+        temperament: 'judgemental',
+        owner_id: 1
+      };
+    
+      const data = await fakeRequest(app)
+        .get('/animals/1')
+        .expect('Content-Type', /json/)
+        .expect(200);
+    
+      expect(data.body).toEqual(expectation);
+    });
   });
 });
+
