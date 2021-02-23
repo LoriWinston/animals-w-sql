@@ -27,9 +27,7 @@ describe('app routes', () => {
       return done();
     });
   
-    afterAll(done => {
-      return client.end(done);
-    });
+
 
     test('returns all animals', async() => {
 
@@ -96,5 +94,103 @@ describe('app routes', () => {
       expect(data.body).toEqual(expectation);
     });
   });
+
+  test('creates a new animal and that new animal is in our animal list', async() => {
+    // define the new candy we want create
+    const newAnimal = {
+      id: 8,
+      species: 'raccoon',
+      temperament: 'stripey',
+      owner_id: 1
+    };
+    // define what we expect that candy to look like after SQL does its thing
+    const expectedAnimal = {
+      ...newAnimal,
+      id: 8,
+      owner_id: 1
+    };
+
+    // use the post endpoint to create a candy
+    const data = await fakeRequest(app)
+      .post('/animals')
+      // pass in our new candy as the req.body
+      .send(newAnimal)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    // we expect the post endpoint to responds with our expected candy
+    expect(data.body).toEqual(expectedAnimal);
+
+    // we want to check that the new candy is now ACTUALLY in the database
+    const allAnimals = await fakeRequest(app)
+      // so we fetch all the candies
+      .get('/animals')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    // we go and find the turkish delight
+    const pegasus = allAnimals.body.find(animal => animal.name === 'pegasus');
+
+    // we check to see that the turkish delight in the DB matches the one we expected
+    expect(pegasus).toEqual(expectedAnimal);
+  });
+
+  test('updates an animal', async() => {
+    // define the new candy we want create
+    const newAnimal = {
+      species: 'bear',
+      temperament: 'judgemental',
+      owner_id: 1
+    };
+
+    const expectedAnimal = {
+      ...newAnimal,
+      owner_id: 1,
+      id: 1
+    };
+
+    // use the put endpoint to update a candy
+    await fakeRequest(app)
+      .put('/animals/1')
+    // pass in our new candy as the req.body
+      .send(newAnimal)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    // go grab the candy we expect to be updated
+    const updatedAnimal = await fakeRequest(app)
+      .get('/animals/1')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    // check to see that it matches our expectations
+    expect(updatedAnimal.body).toEqual(expectedAnimal);
+  });
+
+  test('deletes a single animal with the matching id', async() => {
+    const expectation = {
+      'id': 2,
+      'species': 'fox',
+      'temperament': 'playful',
+      'owner_id': 1
+    };
+
+    const data = await fakeRequest(app)
+      .delete('/animals/2')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(data.body).toEqual(expectation);
+
+    const nothing = await fakeRequest(app)
+      .get('/animals/2')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(nothing.body).toEqual('');
+  });
+  // afterAll(done => {
+  //   return client.end(done);
+  // });
 });
 
