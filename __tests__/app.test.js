@@ -98,7 +98,6 @@ describe('app routes', () => {
   test('creates a new animal and that new animal is in our animal list', async() => {
     // define the new candy we want create
     const newAnimal = {
-      id: 8,
       species: 'raccoon',
       temperament: 'stripey',
       owner_id: 1
@@ -106,7 +105,7 @@ describe('app routes', () => {
     // define what we expect that candy to look like after SQL does its thing
     const expectedAnimal = {
       ...newAnimal,
-      id: 8,
+      id: 7,
       owner_id: 1
     };
 
@@ -117,7 +116,7 @@ describe('app routes', () => {
       .send(newAnimal)
       .expect('Content-Type', /json/)
       .expect(200);
-
+    console.log(data.body);
     // we expect the post endpoint to responds with our expected candy
     expect(data.body).toEqual(expectedAnimal);
 
@@ -129,10 +128,10 @@ describe('app routes', () => {
       .expect(200);
 
     // we go and find the turkish delight
-    const pegasus = allAnimals.body.find(animal => animal.name === 'pegasus');
+    const actual = allAnimals.body.find(animal => animal.species === 'raccoon');
 
     // we check to see that the turkish delight in the DB matches the one we expected
-    expect(pegasus).toEqual(expectedAnimal);
+    expect(actual).toEqual(expectedAnimal);
   });
 
   test('updates an animal', async() => {
