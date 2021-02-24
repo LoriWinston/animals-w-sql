@@ -33,40 +33,46 @@ describe('app routes', () => {
 
       const expectation = [
         {
-          id: 1,
-          species: 'bear',
-          temperament: 'judgemental',
-          owner_id: 1
+          'id': 1,
+          'species': 'bear',
+          'temperament_id': 2,
+          'owner_id': 1,
+          'temperament': 'judgemental'
         },
         {
-          id: 2,
-          species: 'fox',
-          temperament: 'playful',
-          owner_id: 1
+          'id': 2,
+          'species': 'fox',
+          'temperament_id': 1,
+          'owner_id': 1,
+          'temperament': 'playful'
         },
         {
-          id: 3,
-          species: 'rodent',
-          temperament: 'chill af',
-          owner_id: 1
+          'id': 3,
+          'species': 'rodent',
+          'temperament_id': 3,
+          'owner_id': 1,
+          'temperament': 'chill af'
         },
         {
-          id: 4,
-          species: 'wildcat',
-          temperament: 'badass',
-          owner_id: 1
+          'id': 4,
+          'species': 'wildcat',
+          'temperament_id': 2,
+          'owner_id': 1,
+          'temperament': 'judgemental'
         },
         {
-          id: 5,
-          species: 'wildcat',
-          temperament: 'wise',
-          owner_id: 1
+          'id': 5,
+          'species': 'wildcat',
+          'temperament_id': 1,
+          'owner_id': 1,
+          'temperament': 'playful'
         },
         {
-          id: 6,
-          species: 'mythical',
-          temperament: 'aloof whimsy',
-          owner_id: 1
+          'id': 6,
+          'species': 'mythical',
+          'temperament_id': 2,
+          'owner_id': 1,
+          'temperament': 'judgemental'
         }
       ];
 
@@ -83,7 +89,8 @@ describe('app routes', () => {
         id: 1,
         species: 'bear',
         temperament: 'judgemental',
-        owner_id: 1
+        owner_id: 1,
+        temperament_id: 2
       };
     
       const data = await fakeRequest(app)
@@ -99,14 +106,19 @@ describe('app routes', () => {
     // define the new candy we want create
     const newAnimal = {
       species: 'raccoon',
-      temperament: 'stripey',
+      temperament_id: 2,
       owner_id: 1
     };
     // define what we expect that candy to look like after SQL does its thing
+
     const expectedAnimal = {
       ...newAnimal,
       id: 7,
-      owner_id: 1
+    };
+
+    const foundAnimal = {
+      ...expectedAnimal,
+      temperament: 'judgemental'
     };
 
     // use the post endpoint to create a candy
@@ -131,20 +143,20 @@ describe('app routes', () => {
     const actual = allAnimals.body.find(animal => animal.species === 'raccoon');
 
     // we check to see that the turkish delight in the DB matches the one we expected
-    expect(actual).toEqual(expectedAnimal);
+    expect(actual).toEqual(foundAnimal);
   });
 
   test('updates an animal', async() => {
     // define the new candy we want create
     const newAnimal = {
       species: 'bear',
-      temperament: 'judgemental',
+      temperament_id: 1,
       owner_id: 1
     };
 
     const expectedAnimal = {
       ...newAnimal,
-      owner_id: 1,
+      temperament: 'playful',
       id: 1
     };
 
@@ -170,7 +182,7 @@ describe('app routes', () => {
     const expectation = {
       'id': 2,
       'species': 'fox',
-      'temperament': 'playful',
+      'temperament_id': 1,
       'owner_id': 1
     };
 
@@ -188,8 +200,29 @@ describe('app routes', () => {
 
     expect(nothing.body).toEqual('');
   });
-  // afterAll(done => {
-  //   return client.end(done);
-  // });
+  test('returns all temperaments', async() => {
+
+    const expectation = [
+      {
+        'id': 1,
+        'temperament': 'playful'
+      },
+      {
+        'id': 2,
+        'temperament': 'judgemental'
+      },
+      {
+        'id': 3,
+        'temperament': 'chill af'
+      }
+    ];
+
+    const data = await fakeRequest(app)
+      .get('/temperaments')
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(data.body).toEqual(expectation);
+  });
 });
 

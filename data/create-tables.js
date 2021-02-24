@@ -16,13 +16,18 @@ async function run() {
                     id SERIAL PRIMARY KEY,
                     email VARCHAR(256) NOT NULL,
                     hash VARCHAR(512) NOT NULL
-                );           
+                );     
+                CREATE TABLE temperaments (
+                  id SERIAL PRIMARY KEY,
+                  temperament VARCHAR(512) NOT NULL
+                );
                 CREATE TABLE animals (
                     id SERIAL PRIMARY KEY NOT NULL,
                     species VARCHAR(512) NOT NULL,
-                    temperament VARCHAR(512) NOT NULL,
+                    temperament_id INTEGER NOT NULL,
                     owner_id INTEGER NOT NULL REFERENCES users(id)
             );
+
         `);
 
     console.log('create tables complete', getEmoji(), getEmoji(), getEmoji());
